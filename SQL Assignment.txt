@@ -1,0 +1,48 @@
+-- Question 1 
+SELECT FName, LName, SSN, Salary FROM employee WHERE (SELECT MIN(Salary))
+
+-- Question 2
+SELECT DISTINCT employee.FName, employee.LName
+FROM employee 
+JOIN dependent d1 ON d1.Relationship = 'Spouse'
+JOIN dependent d2 ON d2.Relationship = 'Daughter'
+
+-- Question 3
+SELECT FName, LName, PNAME 
+FROM employee JOIN project
+WHERE LNAME IN ('Wong', 'Borg', 'English')
+
+-- Question 4
+SELECT FName, LName, MGRSSN, Salary 
+FROM employee JOIN department WHERE (Sex = 'M' AND Salary>=30000)
+
+-- Question 5
+SELECT DISTINCT PName FROM project JOIN employee
+WHERE LName IN ('Jabbar','Narayan')
+
+-- Question 6
+SELECT DISTINCT FName, LName, year(current_date()) - year(d.BDate) AS dependentAge FROM employee e
+JOIN dependent d on e.ssn = d.ESSN where d.BDate > '1970-01-01';
+
+
+-- Question 7
+SELECT FName, LName, PName, Hours
+FROM employee 
+JOIN works_on 
+JOIN project WHERE PLocation = 'Houston'
+
+-- Question 8
+SELECT e.fname, e.lname, superv.fname AS supervisor_fname, superv.lname AS supervisor_lname FROM employee e
+LEFT JOIN employee superv ON e.SuperSSN = superv.ssn
+
+-- Question 9
+select PName, FName, LName, PLocation from project
+inner join department on DNum = DNumber
+inner join employee on MGRSSN = SSN
+
+-- Question 10
+SELECT FName, LName, MAX(Salary)
+FROM employee 
+JOIN department WHERE SuperSSN = MGRSSN 
+
+

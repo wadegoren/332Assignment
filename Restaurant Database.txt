@@ -1,0 +1,284 @@
+drop database if exists restaurantDB;
+create database restaurantDB;
+
+ 
+ create table customers(
+  	email varchar(30) not null,
+    firstname varchar(20),
+    lastname varchar(20),
+    city varchar(40),
+    payment varchar(40),
+    cellNum varchar(9),
+    postalCode varchar(6),
+    street varchar(20),
+    primary key(email)
+  );
+  
+ create table restaurant(
+    Name varchar(20) not null, -- Primary Key
+    URL varchar(60) not null,
+    credit decimal(6,2),
+    city varchar(40),
+    postalCode varchar(6),
+    street varchar(20),
+    cellNum int(9),
+    primary key(Name, URL)
+  );
+  
+  create table Chef(
+	ID int not null,
+	firstname CHAR(20),
+	lastname CHAR(20),
+	email VARCHAR(50),
+	PRIMARY KEY(ID)
+	);
+	
+ create table Servers(
+	ID int not null,
+	firstname CHAR(20),
+	lastname CHAR(20),
+	email VARCHAR(50),
+	PRIMARY KEY(ID)
+	);
+
+ create table Management(
+	ID int not null,
+	firstname CHAR(20),
+	lastname CHAR(20),
+	email VARCHAR(50),
+	primary key(ID)
+	);
+	
+ create table Delivery(
+	ID int not null,
+	firstname CHAR(20),
+	lastname CHAR(20),
+	email VARCHAR(50),
+	primary key(ID)
+	);
+    
+  create table Credentials(
+	chefID INTEGER not null,
+	creds CHAR(50),
+	PRIMARY KEY(chefID),
+	FOREIGN KEY(chefID)REFERENCES Chef(ID) ON DELETE CASCADE
+	);
+    
+  create table serverEmp(
+    ID int, 
+    firstname varchar(50), 
+    lastname varchar(50),
+    email varchar(100),
+    restaurantname varchar(20),
+    primary key(ID), 
+    foreign key (restaurantname) references restaurant(name)
+  );
+
+ create table chefEmp(
+    ID int, 
+    firstname varchar(50), 
+    lastname varchar(50),
+    email varchar(100),
+    restaurantname varchar(20),
+    primary key(ID),
+    foreign key (restaurantname) references restaurant(name)
+ );
+
+ create table managementEmp(
+    ID int, 
+    firstname varchar(50), 
+    lastname varchar(50),
+    email varchar(100),
+    restaurantname varchar(20),
+    primary key(ID),
+    foreign key (restaurantname) references restaurant(name)
+ );
+
+ create table deliveryEmp(
+    ID int, 
+    firstname varchar(50), 
+    lastname varchar(50),
+    email varchar(100),
+    restaurantname varchar(20),
+    primary key(ID),
+    foreign key (restaurantname) references restaurant(name)
+ );
+ 
+   create table orders(
+  	ID int not null,
+    price decimal(4,2) not null,
+    deliveryTime time, 
+    placementTime time,
+    tip decimal(4,2),
+    deliveryID int,
+    primary key(ID),
+    foreign key (deliveryID) references deliveryEmp(ID) on delete set null
+  );
+  
+   create table food(
+  	name varChar(20) not null, -- Primary Key
+    price decimal(4,2) not null, 
+    ordered int,
+    restaurantName varChar(20) not null,
+    primary key(name, price),
+    foreign key(restaurantName) references restaurant(name) on delete cascade,
+	foreign key(ordered) references orders(ID)
+  );
+ 
+  create table chefCredentials(
+    chefId integer primary key, 
+    credential varchar(100) not null, 
+    foreign key (chefId) references chefEmp(ID) on delete CASCADE);
+
+
+ create table chefschedule(
+    date date, 
+    chefId int, 
+    starttime time, 
+    endtime time, 
+    primary key(chefId, date), 
+    foreign key(chefId) references chefEmp(ID) on delete CASCADE);
+
+ create table managementschedule(
+    date date, 
+    manageId integer, 
+    starttime time, 
+    endtime time, 
+    primary key(manageId, date), 
+    foreign key(manageId) references managementEmp(ID) on delete CASCADE);
+	  
+ create table deliveryschedule(
+    date date, 
+    deliveryId int, 
+    starttime time, 
+    endtime time, 
+    primary key(deliveryId, date), 
+    foreign key(deliveryId) references deliveryEmp(ID) on delete CASCADE);
+    
+ create table serverschedule(
+    day date, 
+    serverId int, 
+    starttime time, 
+    endtime time, 
+    primary key(serverId, day), 
+    foreign key(serverId) references serverEmp(ID) on delete CASCADE
+ ); 
+ 
+ -- Insert data into the customers table
+INSERT INTO customers(email, firstname, lastname, city, postalCode, street)
+VALUES 
+('john.doe@example.com', 'John', 'Doe', 'New York', '10001', 'Main St'),
+('jane.smith@example.com', 'Jane', 'Smith', 'Los Angeles', '90001', 'Broadway'),
+('jack.johnson@example.com', 'Jack', 'Johnson', 'Chicago', '60601', 'State St'),
+('lisa.wong@example.com', 'Lisa', 'Wong', 'San Francisco', '94102', 'Market St'),
+('mike.jones@example.com', 'Mike', 'Jones', 'Houston', '77002', 'Main St'),
+('amy.chang@example.com', 'Amy', 'Chang', 'Atlanta', '30303', 'Peachtree St');
+
+-- Insert data into the restaurant table
+INSERT INTO restaurant(Name, URL, credit, city, postalCode, street, cellNum)
+VALUES 
+('Joe\'s Diner', 'http://www.joesdiner.com', 500.00, 'New York', '10001', '1st Ave', 5551234),
+('Sushi Palace', 'http://www.sushipalace.com', 1000.00, 'Los Angeles', '90001', '2nd St', 5555678),
+('Burger Shack', 'http://www.burgershack.com', 250.00, 'Chicago', '60601', '3rd St', 5559999),
+('Pizza Paradise', 'http://www.pizzaparadise.com', 750.00, 'San Francisco', '94102', '4th St', 5552345),
+('Taco House', 'http://www.tacohouse.com', 350.00, 'Houston', '77002', '5th St', 5556789),
+('Mediterranean Grill', 'http://www.mediterraneangrill.com', 600.00, 'Atlanta', '30303', '6th St', 5551111);
+
+-- Insert data into the Chef table
+INSERT INTO Chef(ID, firstname, lastname, email)
+VALUES 
+(1, 'Mark', 'Johnson', 'mark.johnson@example.com'),
+(2, 'Maria', 'Garcia', 'maria.garcia@example.com'),
+(3, 'David', 'Lee', 'david.lee@example.com'),
+(4, 'Jessica', 'Wang', 'jessica.wang@example.com'),
+(5, 'Thomas', 'Brown', 'thomas.brown@example.com'),
+(6, 'Sophia', 'Kim', 'sophia.kim@example.com');
+
+-- Insert data into the Servers table
+INSERT INTO Servers(ID, firstname, lastname, email)
+VALUES 
+(1, 'John', 'Smith', 'john.smith@example.com'),
+(2, 'Emily', 'Jones', 'emily.jones@example.com'),
+(3, 'Michael', 'Chen', 'michael.chen@example.com'),
+(4, 'Alex', 'Davis', 'alex.davis@example.com'),
+(5, 'Olivia', 'Nguyen', 'olivia.nguyen@example.com'),
+(6, 'William', 'Park', 'william.park@example.com');
+ 
+ -- Insert data into the Management table
+INSERT INTO Management(ID, firstname, lastname, email)
+VALUES 
+(1, 'Sarah', 'Johnson', 'sarah.johnson@example.com'),
+(2, 'Chris', 'Lee', 'chris.lee@example.com'),
+(3, 'Wade', 'Goren','wade.goren@example.com');
+ 
+ -- Insert data into Delivery table
+INSERT INTO Delivery(ID, firstname, lastname, email)
+VALUES (1, 'John', 'Doe', 'johndoe@example.com'),
+       (2, 'Jane', 'Smith', 'janesmith@example.com'),
+       (3, 'Mike', 'Johnson', 'mikejohnson@example.com'),
+       (4, 'Amy', 'Lee', 'amylee@example.com'),
+       (5, 'Tom', 'Brown', 'tombrown@example.com'),
+       (6, 'Emily', 'Taylor', 'emilytaylor@example.com');
+
+-- Insert data into Orders table
+INSERT INTO Orders(ID, price, deliveryTime, placementTime, tip, deliveryID)
+VALUES (1, 12.50, '17:30:00', '16:00:00', 2.00, 1),
+       (2, 21.75, '18:15:00', '17:00:00', 3.50, 2),
+       (3, 15.00, '19:00:00', '18:00:00', 2.50, 3),
+       (4, 8.25, '12:30:00', '11:00:00', 1.25, 4),
+       (5, 11.50, '13:45:00', '12:30:00', 1.75, 5),
+       (6, 18.00, '21:00:00', '20:00:00', 4.00, NULL);
+
+-- Insert data into Food table
+INSERT INTO Food(name, price, ordered, restaurantName)
+VALUES ('Hamburger', 7.50, 1, 'Burger Palace'),
+       ('Cheese Pizza', 10.25, 2, 'Pizza House'),
+       ('Chicken Alfredo', 13.75, 3, 'Italian Bistro'),
+       ('Pad Thai', 12.50, 4, 'Thai Cuisine'),
+       ('Sushi Platter', 18.00, 5, 'Japanese Grill'),
+       ('Salmon', 15.50, 6, 'Fish Market');
+
+-- Insert data into ChefCredentials table
+INSERT INTO ChefCredentials(chefId, credential)
+VALUES (1, 'Culinary Institute of America Graduate'),
+       (2, 'James Beard Award Winner'),
+       (3, 'Masters in Culinary Arts'),
+       (4, 'Former Executive Chef at 3 Michelin-Starred Restaurant'),
+       (5, 'Expert in French Cuisine'),
+       (6, 'Trained in Japanese Cuisine');
+
+-- Insert data into ChefSchedule table
+INSERT INTO ChefSchedule(date, chefId, starttime, endtime)
+VALUES ('2023-02-20', 1, '14:00:00', '22:00:00'),
+       ('2023-02-21', 2, '10:00:00', '18:00:00'),
+       ('2023-02-22', 3, '12:00:00', '20:00:00'),
+       ('2023-02-23', 4, '16:00:00', '00:00:00'),
+       ('2023-02-24', 5, '14:00:00', '22:00:00'),
+       ('2023-02-25', 6, '11:00:00', '19:00:00');
+	   
+INSERT INTO managementschedule (date, manageId, starttime, endtime)
+VALUES ('2023-02-18', 1, '09:00:00', '17:00:00'),
+       ('2023-02-19', 2, '10:00:00', '18:00:00'),
+       ('2023-02-20', 3, '12:00:00', '20:00:00'),
+       ('2023-02-21', 4, '10:00:00', '18:00:00'),
+       ('2023-02-22', 5, '14:00:00', '22:00:00'),
+       ('2023-02-23', 6, '08:00:00', '16:00:00');
+
+-- Insert data into deliveryschedule
+INSERT INTO deliveryschedule (date, deliveryId, starttime, endtime)
+VALUES ('2023-02-18', 1, '11:00:00', '20:00:00'),
+       ('2023-02-19', 2, '13:00:00', '22:00:00'),
+       ('2023-02-20', 3, '09:00:00', '18:00:00'),
+       ('2023-02-21', 4, '10:00:00', '19:00:00'),
+       ('2023-02-22', 5, '11:00:00', '20:00:00'),
+       ('2023-02-23', 6, '13:00:00', '22:00:00');	  
+       
+       
+ INSERT INTO serverSchedule (day, serverId, starttime, endtime)
+VALUES ('2023-02-20', 6, '09:00:00', '15:00:00'),
+       ('2023-02-21', 6, '11:00:00', '18:00:00'),
+       ('2023-02-22', 6, '17:00:00', '23:00:00'),
+       ('2023-02-23', 6, '09:00:00', '15:00:00'),
+       ('2023-02-24', 6, '11:00:00', '18:00:00'),
+       ('2023-02-25', 6, '17:00:00', '23:00:00');
+	  
